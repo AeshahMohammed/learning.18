@@ -11,22 +11,23 @@
 import SwiftUI
 
 struct Task3View: View {
-    // 🧠 reuse all the data from Task2
+    // Reuse data from Task2
     @Binding var selectedDate: Date
     @Binding var learnedDays: Int
     @Binding var frozenDays: Int
     @Binding var loggedDays: [LoggedDay]
-
-    // same formatters for calendar
+    
+    // same formatters
     let monthYearFormatter: DateFormatter
     let shortWeekdayFormatter: DateFormatter
     let dayFormatter: DateFormatter
     let colorFor: (Date) -> Color
-
     var currentWeekDates: [Date]
-
+    
+    @State private var showMonthPicker = false
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack {
             // HEADER
             HStack {
                 Text("Activity")
@@ -42,51 +43,65 @@ struct Task3View: View {
                 .foregroundColor(.white)
             }
             .padding(.top, 20)
-
-            // 🗓 SAME CALENDAR SECTION AS TASK2
+            
+            // CARD SECTION (same as Task2)
             VStack(alignment: .leading, spacing: 16) {
-                // Month and week navigation
+                // Month & Week Navigation
                 HStack {
-                    Text(selectedDate, formatter: monthYearFormatter)
-                        .font(.headline)
-                        .foregroundColor(.white)
+                    Button(action: { withAnimation { showMonthPicker.toggle() } }) {
+                        HStack(spacing: 4) {
+                            Text(selectedDate, formatter: monthYearFormatter)
+                                .font(.headline)
+                                .foregroundColor(.white)
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(.orange)
+                                .rotationEffect(.degrees(showMonthPicker ? 180 : 0))
+                        }
+                    }
                     Spacer()
                 }
-
-                // Weekdays row
+                
+                if showMonthPicker {
+                    DatePicker("", selection: $selectedDate, displayedComponents: [.date])
+                        .datePickerStyle(.wheel)
+                        .labelsHidden()
+                        .colorScheme(.dark)
+                        .transition(.opacity)
+                        .onChange(of: selectedDate) { _ in
+                            withAnimation { showMonthPicker = false }
+                        }
+                }
+                
+                // Weekdays Row
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(currentWeekDates, id: \.self) { date in
                             let weekday = shortWeekdayFormatter.string(from: date)
                             let dayNumber = dayFormatter.string(from: date)
-                            let isSelected = Calendar.current.isDate(date, inSameDayAs: selectedDate)
                             let color = colorFor(date)
-
+                            
                             VStack(spacing: 5) {
                                 Text(weekday)
                                     .font(.caption2)
                                     .foregroundColor(.gray)
-
                                 Text(dayNumber)
                                     .font(.title.bold())
                                     .foregroundColor(.white)
                                     .frame(width: 40, height: 40)
-                                    .background(
-                                        Circle()
-                                            .fill(color)
-                                    )
+                                    .background(Circle().fill(color))
                             }
                         }
                     }
                     .padding(.horizontal)
                 }
-
+                
+                // Learning Swift Section
                 Text("Learning Swift")
                     .font(.headline)
                     .foregroundColor(.white)
                 Divider().background(Color.white.opacity(0.1))
-
-                // Stats cards (same as Task2)
+                
+                // Stats Cards
                 HStack(spacing: 28) {
                     HStack(spacing: 30) {
                         Image(systemName: "flame.fill")
@@ -104,14 +119,14 @@ struct Task3View: View {
                     .background(Color(red: 0.25, green: 0.17, blue: 0.11))
                     .cornerRadius(30)
                     .glassEffect()
-
+                    
                     HStack(spacing: 30) {
                         Image(systemName: "cube.fill")
                             .foregroundColor(.blue)
                             .font(.title3)
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(frozenDays)").bold().foregroundColor(.white)
-                            Text(frozenDays == 1 ? "Day Frozen" : "Days Frozen")
+                            Text(frozenDays == 1 ? "Day Freezed" : "Days Freezed")
                                 .font(.caption)
                                 .foregroundColor(.white)
                         }
@@ -122,28 +137,26 @@ struct Task3View: View {
                     .cornerRadius(30)
                     .glassEffect()
                 }
-            }
+            }            //here mshmsh
             .padding(10)
             .background(Color(red: 0.10, green: 0.10, blue: 0.10))
             .cornerRadius(16)
-
-            Spacer()
-
+            
             // 🎉 GOAL COMPLETED SECTION
-            VStack(spacing: 16) {
+            VStack(spacing:24) {
                 Image(systemName: "hands.clap.fill")
                     .font(.system(size: 60))
                     .foregroundColor(.orange)
                     .symbolEffect(.wiggle)
-
+                
                 Text("Well done!")
-                    .font(.largeTitle.bold())
+                    .font(.title3.bold())
                     .foregroundColor(.white)
-
-                Text("Goal completed!")
-                    .font(.title3)
+                
+                Text("                             Goal completed!\n       You can start learning again or set new                         \n                                learning goal")
+                    .font(.headline)
                     .foregroundColor(.gray)
-
+                
                 Button {
                     // Reset goal logic (return to Task2View)
                 } label: {
@@ -157,7 +170,7 @@ struct Task3View: View {
                         .cornerRadius(25)
                         .glassEffect()
                 }
-
+                
                 Button {
                     // Keep same goal logic
                 } label: {
@@ -166,22 +179,23 @@ struct Task3View: View {
                         .foregroundColor(.orange)
                 }
             }
-            .padding(.top, 40)
-            .frame(maxWidth: .infinity)
-
+            .padding(.top, 30)
+            
             Spacer()
         }
         .padding()
         .background(Color.black.ignoresSafeArea())
+        .navigationBarBackButtonHidden(true)
     }
 }
 
-#Preview {let calendar = Calendar.current
+#Preview {
+    let calendar = Calendar.current
     let today = Date()
     let startOfWeek = calendar.dateInterval(of: .weekOfMonth, for: today)!.start
     let weekDates = (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: startOfWeek) }
-    // preview with sample bindings
-    Task3View(
+    
+    return Task3View(
         selectedDate: .constant(Date()),
         learnedDays: .constant(7),
         frozenDays: .constant(1),
@@ -202,9 +216,7 @@ struct Task3View: View {
             return f
         }(),
         colorFor: { _ in Color.orange },
-              currentWeekDates: weekDates
-          )
+        currentWeekDates: weekDates
+    )
 }
-    
-
 

@@ -177,30 +177,53 @@ struct Task2View: View {
                                 ForEach(currentWeekDates, id: \.self) { date in
                                     let weekday = shortWeekdayFormatter.string(from: date)
                                     let dayNumber = dayFormatter.string(from: date)
+
                                     let isSelected = Calendar.current.isDate(date, inSameDayAs: selectedDate)
-                                    let color = colorFor(date: date)
-                                    
+                                    let learned = isLogged(date, as: .learned)
+                                    let frozen = isLogged(date, as: .frozen)
+
+                                    // base colors for non-selected states
+                                    let baseColor: Color = {
+                                        if learned { return Color.orange.opacity(0.5) }
+                                        if frozen  { return Color.blue.opacity(0.6) }
+                                        return Color.black.opacity(0.3)
+                                    }()
+
+                                    // final fill color (darker if selected)
+                                    let fillColor: Color = {
+                                        if isSelected {
+                                            if frozen { return Color.blue.opacity(0.85) }      // selected frozen -> darker blue
+                                            return Color.orange.opacity(0.9)                  // selected learned/empty -> darker orange
+                                        } else {
+                                            return baseColor
+                                        }
+                                    }()
+
                                     VStack(spacing: 5) {
                                         Text(weekday)
                                             .font(.caption2)
                                             .foregroundColor(.gray)
-                                        
+
                                         Text(dayNumber)
                                             .font(.title.bold())
                                             .foregroundColor(.white)
                                             .frame(width: 40, height: 40)
                                             .background(
                                                 Circle()
-                                                    .fill(color)
+                                                    .fill(fillColor)
+                                                    .overlay(
+                                                        // selected ring
+                                                        Circle()
+                                                            .stroke(isSelected ? (frozen ? Color.blue : Color.orange) : Color.clear, lineWidth: isSelected ? 4 : 0)
+                                                    )
+                                                    .animation(.easeInOut(duration: 0.18), value: isSelected)
                                             )
                                     }
                                     .onTapGesture {
-                                        withAnimation {
-                                            selectedDate = date
-                                        }
+                                        withAnimation { selectedDate = date }
                                     }
                                 }
-                            }
+}
                             .padding(.horizontal)
                         }
                     }
