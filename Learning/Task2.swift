@@ -313,7 +313,6 @@ struct Task2View: View {
                 } label: {
                     Text(selectedIsFrozen ? "Day Frozen" : "Log as Freezed")
                         .font(.headline)
-                        .bold()
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(selectedIsFrozen ? Color.black.opacity(0.7) : Color.blue.opacity(0.8))
@@ -327,7 +326,7 @@ struct Task2View: View {
                     .font(.caption)
                     .foregroundColor(.gray)
             }
-            .frame(maxWidth: .infinity)
+        
             
             Spacer()
         }
