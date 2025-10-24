@@ -17,8 +17,7 @@ struct LearningGoalView: View {
             VStack(alignment: .leading, spacing: 24) {
                 HStack{
                 
-                    Button {
-                        showConfirmation = true
+                    Button {dismiss()
                     } label: {
                         Image(systemName: "chevron.backward")
                             .font(.title2)
@@ -119,7 +118,7 @@ struct LearningGoalView: View {
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 10)
-                                .background(Color.gray.opacity(0.7))
+                                .background(Color.gray.opacity(0.5))
                                 .cornerRadius(20)
 
                                 Button("Update") {
@@ -128,12 +127,12 @@ struct LearningGoalView: View {
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 10)
-                                .background(Color.orange)
+                                .background(Color.orange.opacity(0.7))
                                 .cornerRadius(20)
                             }
                         }
                        .padding()
-                        .background(Color(.darkGray).opacity(0.9))
+                        .background(Color(.black).opacity(0.9))
                         .cornerRadius(16)
                      .shadow(radius: 16)
                   .frame(maxWidth: 300)
@@ -143,6 +142,7 @@ struct LearningGoalView: View {
                     .animation(.easeInOut, value: showConfirmation)
                 }
             }
+            .navigationBarBackButtonHidden(true)
 
         }
     }

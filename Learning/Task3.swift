@@ -25,7 +25,7 @@ struct Task3View: View {
     var currentWeekDates: [Date]
     
     @State private var showMonthPicker = false
-    
+    @State private var goToTask4 = false
     var body: some View {
         NavigationStack {
             
@@ -164,8 +164,12 @@ struct Task3View: View {
                         .font(.headline)
                         .foregroundColor(.gray)
                     
+                    NavigationLink(destination: LearningGoalView(), isActive: $goToTask4) {
+                        EmptyView()
+                    }
+
                     Button {
-                        // Reset goal logic (return to Task2View)
+                        goToTask4 = true
                     } label: {
                         Text("Set new learning goal")
                             .font(.headline)

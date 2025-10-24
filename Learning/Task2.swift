@@ -19,7 +19,7 @@ enum DayStatus {
 }
 
 struct Task2View: View {
-    @State private var selectedDate = Calendar.current.startOfDay(for: Date())
+    @State private var selectedDate :Date = Date()
     @State private var learnedDays = 0
     @State private var frozenDays = 0
     @State private var showMonthPicker = false
@@ -217,7 +217,7 @@ struct Task2View: View {
                                                             .stroke(isSelected ? (frozen ? Color.blue : Color.orange) : Color.clear, lineWidth: isSelected ? 4 : 0)
                                                     )
                                                     .animation(.easeInOut(duration: 0.18), value: isSelected)
-                                            )
+                                            ).padding(4)
                                     }
                                     .onTapGesture {
                                         withAnimation { selectedDate = date }
@@ -225,6 +225,7 @@ struct Task2View: View {
                                 }
 }
                             .padding(.horizontal)
+                            .padding(.vertical,6)
                         }
                     }
                     
