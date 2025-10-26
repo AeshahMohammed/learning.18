@@ -37,7 +37,7 @@ struct Task3View: View {
                         .padding(16)
                         .font(.largeTitle)
                         .bold()
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                     Spacer()
                     HStack(spacing: 16) {
                         Button(action: {}) { Image(systemName: "calendar") }
@@ -45,7 +45,7 @@ struct Task3View: View {
                        
                     }.padding(10)
                     .font(.title3)
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                 }
                 .padding(.top, 20)
                 
@@ -57,7 +57,7 @@ struct Task3View: View {
                             HStack(spacing: 4) {
                                 Text(selectedDate, formatter: monthYearFormatter)
                                     .font(.headline)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.primary)
                                 Image(systemName: "chevron.down")
                                     .foregroundColor(.orange)
                                     .rotationEffect(.degrees(showMonthPicker ? 180 : 0))
@@ -88,10 +88,10 @@ struct Task3View: View {
                                 VStack(spacing: 5) {
                                     Text(weekday)
                                         .font(.caption2)
-                                        .foregroundColor(.gray)
+                                        .foregroundColor(.secondary)
                                     Text(dayNumber)
                                         .font(.title.bold())
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.primary)
                                         .frame(width: 40, height: 40)
                                         .background(Circle().fill(color))
                                 }
@@ -103,7 +103,7 @@ struct Task3View: View {
                     // Learning Swift Section
                     Text("Learning Swift")
                         .font(.headline)
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                     Divider().background(Color.white.opacity(0.1))
                     
                     // Stats Cards
@@ -116,7 +116,7 @@ struct Task3View: View {
                                 Text("\(learnedDays)").bold().foregroundColor(.white)
                                 Text(learnedDays == 1 ? "Day Learned" : "Days Learned")
                                     .font(.caption)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.primary)
                             }
                         }   .frame(width: 150, height: 60)
                         
@@ -134,7 +134,7 @@ struct Task3View: View {
                                 Text("\(frozenDays)").bold().foregroundColor(.white)
                                 Text(frozenDays == 1 ? "Day Freezed" : "Days Freezed")
                                     .font(.caption)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.primary)
                             }
                         }    .frame(width: 150, height: 60)
                         
@@ -146,7 +146,7 @@ struct Task3View: View {
                     }
                 }            //here mshmsh
                 .padding(10)
-                .background(Color(red: 0.10, green: 0.10, blue: 0.10))
+                .background(Color(.systemBackground))
                 .cornerRadius(16)
                 
                 // 🎉 GOAL COMPLETED SECTION
@@ -158,11 +158,11 @@ struct Task3View: View {
                     
                     Text("Well done!")
                         .font(.title3.bold())
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                     
-                    Text("                             Goal completed!\n       You can start learning again or set new                         \n                                learning goal")
-                        .font(.headline)
-                        .foregroundColor(.gray)
+                    Text("                               Goal completed! \n You can start learning again or set new learning goal")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                     
                     NavigationLink(destination: LearningGoalView(), isActive: $goToTask4) {
                         EmptyView()
@@ -177,7 +177,7 @@ struct Task3View: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color.orange)
-                            .foregroundColor(.white)
+                            .foregroundColor(.primary)
                             .cornerRadius(25)
                             .glassEffect()
                     }
@@ -190,12 +190,12 @@ struct Task3View: View {
                             .foregroundColor(.orange)
                     }
                 }
-                .padding(.top, 30)
+                .padding()
                 
                 Spacer()
             }
-            .padding()
-            .background(Color.black.ignoresSafeArea())
+            .padding(100)
+            .background(Color(.systemBackground).ignoresSafeArea())
             .navigationBarBackButtonHidden(true)
             
         }

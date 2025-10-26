@@ -23,7 +23,7 @@ struct LearningGoalView: View {
                             .font(.title2)
                             .frame(width: 40, height: 40)
                             .glassEffect()
-                            .foregroundColor(.black)
+                            .foregroundColor(.primary)
                            
                        
                     }
@@ -31,7 +31,7 @@ struct LearningGoalView: View {
                     Spacer()
                       VStack(alignment: .leading, spacing: 24){    Text("Learning Goal")
                             .font(.title)
-                          .foregroundColor(.white)}
+                          .foregroundColor(.primary)}
                     Spacer()
                     HStack() {
                         Button {
@@ -51,16 +51,16 @@ struct LearningGoalView: View {
                 
                 Text("I want to learn")
                     .font(.headline)
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(.primary.opacity(0.8))
                 
                 TextField("", text: $goalText)
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                     .padding(.vertical, 8)
-                    .overlay(Rectangle().frame(height: 1).foregroundColor(.gray), alignment: .bottom)
+                    .overlay(Rectangle().frame(height: 1).foregroundColor(.primary), alignment: .bottom)
                 
                 Text("I want to learn it in a")
                     .font(.headline)
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(.primary)
                 
                 HStack(spacing: 16) {
                     ForEach(["Week", "Month", "Year"], id: \.self) { duration in
@@ -72,9 +72,9 @@ struct LearningGoalView: View {
                                 .padding(.horizontal, 20)
                                 .background(
                                     Capsule()
-                                        .fill(selectedDuration == duration ? Color.orange : Color.gray.opacity(0.3))
+                                        .fill(selectedDuration == duration ? Color.orange : Color.primary.opacity(0.3))
                                 )
-                                .foregroundColor(.white)
+                                .foregroundColor(.primary)
                         }
                     }
                 }
@@ -82,7 +82,7 @@ struct LearningGoalView: View {
                 Spacer()
             }
             .padding()
-            .background(Color.black.ignoresSafeArea())
+            .background(Color(.systemBackground).ignoresSafeArea())
             .navigationTitle("Learning Goal")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -94,7 +94,7 @@ struct LearningGoalView: View {
                 if showConfirmation {
                     ZStack {
                         // Dimmed background
-                        Color.black.opacity(0.6)
+                        Color(.systemBackground).opacity(0.6)
                             .ignoresSafeArea()
                             .onTapGesture {
                                 showConfirmation = false
@@ -104,10 +104,10 @@ struct LearningGoalView: View {
                         VStack(spacing: 20) {
                             Text("Update Learning goal")
                                 .font(.headline)
-                                .foregroundColor(.white)
+                                .foregroundColor(.primary)
 
                             Text("If you update now, your streak will start over.")
-                                .foregroundColor(.white.opacity(0.8))
+                                .foregroundColor(.primary.opacity(0.8))
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal)
 
@@ -115,7 +115,7 @@ struct LearningGoalView: View {
                                 Button("Dismiss") {
                                     showConfirmation = false
                                 }
-                                .foregroundColor(.white)
+                                .foregroundColor(.primary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 10)
                                 .background(Color.gray.opacity(0.5))
@@ -124,7 +124,7 @@ struct LearningGoalView: View {
                                 Button("Update") {
                                     dismiss()
                                 }
-                                .foregroundColor(.white)
+                                .foregroundColor(.primary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 10)
                                 .background(Color.orange.opacity(0.7))
@@ -132,7 +132,7 @@ struct LearningGoalView: View {
                             }
                         }
                        .padding()
-                        .background(Color(.black).opacity(0.9))
+                        .background(Color(.systemBackground).opacity(0.9))
                         .cornerRadius(16)
                      .shadow(radius: 16)
                   .frame(maxWidth: 300)

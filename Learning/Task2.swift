@@ -125,14 +125,14 @@ struct Task2View: View {
                 Text("Activity")
                     .font(.largeTitle)
                     .bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                 Spacer()
                 HStack(spacing: 16) {
                     Button(action: {}) { Image(systemName: "calendar") }
                     Button(action: {}) { Image(systemName: "person.circle") }
                 }
                 .font(.title3)
-                .foregroundColor(.white)
+                .foregroundColor(.primary)
             }
             .padding(.top, 20)
             
@@ -144,7 +144,7 @@ struct Task2View: View {
                             HStack(spacing: 4) {
                                 Text(selectedDate, formatter: monthYearFormatter)
                                     .font(.headline)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.primary)
                                 Image(systemName: "chevron.down")
                                     .foregroundColor(.orange)
                                     .rotationEffect(.degrees(showMonthPicker ? 180 : 0))
@@ -202,11 +202,11 @@ struct Task2View: View {
                                     VStack(spacing: 5) {
                                         Text(weekday)
                                             .font(.caption2)
-                                            .foregroundColor(.gray)
+                                            .foregroundColor(.secondary)
 
                                         Text(dayNumber)
                                             .font(.title.bold())
-                                            .foregroundColor(.white)
+                                            .foregroundColor(.primary)
                                             .frame(width: 40, height: 40)
                                             .background(
                                                 Circle()
@@ -233,7 +233,7 @@ struct Task2View: View {
                 
                 Text("Learning Swift")
                     .font(.headline)
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                 Divider().background(Color.white.opacity(0.1))
                 
                 // Stats cards
@@ -275,7 +275,7 @@ struct Task2View: View {
                 Spacer().padding()
             }
             .padding(10)
-            .background(Color(red: 0.10, green: 0.10, blue: 0.10))
+            .background(Color(.systemBackground))
             .cornerRadius(16)
             
             // Big circle + buttons
@@ -301,7 +301,7 @@ struct Task2View: View {
                             "Log as Learned")
                     .font(.title)
                     .bold()
-                    .foregroundColor(.white)
+                    .foregroundColor(.primary)
                 }
                 .onTapGesture {
                     if !selectedIsLearned && !selectedIsFrozen {
@@ -317,7 +317,7 @@ struct Task2View: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(selectedIsFrozen ? Color.black.opacity(0.7) : Color.blue.opacity(0.8))
-                        .foregroundColor(.white)
+                        .foregroundColor(.primary)
                         .cornerRadius(25)
                         .glassEffect() // your original
                 }
@@ -325,14 +325,14 @@ struct Task2View: View {
                 
                 Text("\(frozenDays) out of \(freezeLimit) \(freezeLimit == 1 ? "Freeze" : "Freezes") used")
                     .font(.caption)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.secondary)
             }
         
             
             Spacer()
         }
         .padding()
-        .background(Color.black.ignoresSafeArea())
+        .background(Color(.systemBackground).ignoresSafeArea())
         .onAppear { checkForStreakReset() }
         NavigationLink("", destination: Task3View(
         selectedDate: $selectedDate,
