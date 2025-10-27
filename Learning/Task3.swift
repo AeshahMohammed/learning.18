@@ -14,6 +14,8 @@ import SwiftUI
 
 struct Task3View: View {
     // Reuse data from Task2
+    @State private var goToTask5 = false
+
     @Binding var goalSubject:String
     @Binding var goalDuration:String
     @Binding var selectedDate: Date
@@ -44,8 +46,12 @@ struct Task3View: View {
                         .foregroundColor(.primary)
                     Spacer()
                     HStack(spacing: 16) {
-                        Button(action: {}) { Image(systemName: "calendar") }
-                        Button(action: {}) { Image(systemName: "person.circle") }
+    
+                        Button(action: { goToTask5 = true }) {
+                            Image(systemName: "calendar")
+                        }
+
+                                    Button(action: {}) { Image(systemName: "person.circle") }
                         
                     }.padding(10)
                         .font(.title3)
@@ -170,7 +176,15 @@ struct Task3View: View {
                     NavigationLink(destination: Task4(), isActive: $goToTask4) {
                         EmptyView()
                     }
-                    
+                    NavigationLink(destination:
+                        Task5(
+                            loggedDays: $loggedDays,
+                            selectedDate: $selectedDate
+                        ),
+                        isActive: $goToTask5
+                    ) {
+                        EmptyView()
+                    }
                     Button {
                         goToTask4 = true
                     } label: {

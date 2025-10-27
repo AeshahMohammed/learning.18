@@ -21,6 +21,8 @@ enum DayStatus {
 struct Task2View: View {
     @Binding var goalSubject: String
     @Binding  var goalDuration: String
+    @State private var goToTask5 = false
+
     @State private var selectedDate :Date = Date()
     @State private var learnedDays = 0
     @State private var frozenDays = 0
@@ -121,221 +123,224 @@ struct Task2View: View {
 
     var body: some View {
         NavigationStack {
-        VStack(alignment: .leading, spacing: 20) {
-            // Header
-            HStack {
-                Text("Activity")
-                    .font(.largeTitle)
-                    .bold()
+            VStack(alignment: .leading, spacing: 20) {
+                // Header
+                HStack {
+                    Text("Activity")
+                        .font(.largeTitle)
+                        .bold()
+                        .foregroundColor(.primary)
+                    Spacer()
+                    HStack(spacing: 16) {
+                        
+                        Button(action: { goToTask5 = true }) {
+                            Image(systemName: "calendar")
+                        }
+                        Button(action: {}) { Image(systemName: "person.circle") }
+                    }
+                    .font(.title3)
                     .foregroundColor(.primary)
-                Spacer()
-                HStack(spacing: 16) {
-                    Button(action: {}) { Image(systemName: "calendar") }
-                    Button(action: {}) { Image(systemName: "person.circle") }
                 }
-                .font(.title3)
-                .foregroundColor(.primary)
-            }
-            .padding(.top, 20)
-            
-            VStack(alignment: .leading, spacing: 16) {
-                // Month + Week
+                .padding(.top, 20)
+                
                 VStack(alignment: .leading, spacing: 16) {
-                    HStack {
-                        Button(action: { withAnimation { showMonthPicker.toggle() } }) {
-                            HStack(spacing: 4) {
-                                Text(selectedDate, formatter: monthYearFormatter)
-                                    .font(.headline)
-                                    .foregroundColor(.primary)
-                                Image(systemName: "chevron.down")
-                                    .foregroundColor(.orange)
-                                    .rotationEffect(.degrees(showMonthPicker ? 180 : 0))
+                    // Month + Week
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Button(action: { withAnimation { showMonthPicker.toggle() } }) {
+                                HStack(spacing: 4) {
+                                    Text(selectedDate, formatter: monthYearFormatter)
+                                        .font(.headline)
+                                        .foregroundColor(.primary)
+                                    Image(systemName: "chevron.down")
+                                        .foregroundColor(.orange)
+                                        .rotationEffect(.degrees(showMonthPicker ? 180 : 0))
+                                }
+                            }
+                            Spacer()
+                            HStack(spacing: 16) {
+                                Button(action: { changeWeek(by: -1) }) { Image(systemName: "chevron.left").foregroundColor(.orange) }
+                                Button(action: { changeWeek(by: 1) }) { Image(systemName: "chevron.right").foregroundColor(.orange) }
                             }
                         }
-                        Spacer()
-                        HStack(spacing: 16) {
-                            Button(action: { changeWeek(by: -1) }) { Image(systemName: "chevron.left").foregroundColor(.orange) }
-                            Button(action: { changeWeek(by: 1) }) { Image(systemName: "chevron.right").foregroundColor(.orange) }
+                        
+                        if showMonthPicker {
+                            DatePicker("", selection: $selectedDate, displayedComponents: [.date])
+                                .datePickerStyle(.wheel)
+                                .labelsHidden()
+                                .colorScheme(.dark)
+                                .transition(.opacity)
+                                .onChange(of: selectedDate) { _ in
+                                    withAnimation { showMonthPicker = false }
+                                }
                         }
-                    }
-                    
-                    if showMonthPicker {
-                        DatePicker("", selection: $selectedDate, displayedComponents: [.date])
-                            .datePickerStyle(.wheel)
-                            .labelsHidden()
-                            .colorScheme(.dark)
-                            .transition(.opacity)
-                            .onChange(of: selectedDate) { _ in
-                                withAnimation { showMonthPicker = false }
-                            }
-                    }
-                    
-                    // Weekdays row// Weekdays row
-                    VStack(alignment: .leading, spacing: 14) {
                         
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(currentWeekDates, id: \.self) { date in
-                                    let weekday = shortWeekdayFormatter.string(from: date)
-                                    let dayNumber = dayFormatter.string(from: date)
-
-                                    let isSelected = Calendar.current.isDate(date, inSameDayAs: selectedDate)
-                                    let learned = isLogged(date, as: .learned)
-                                    let frozen = isLogged(date, as: .frozen)
-
-                                    // base colors for non-selected states
-                                    let baseColor: Color = {
-                                        if learned { return Color.orange.opacity(0.5) }
-                                        if frozen  { return Color.blue.opacity(0.6) }
-                                        return Color.black.opacity(0.3)
-                                    }()
-
-                                    // final fill color (darker if selected)
-                                    let fillColor: Color = {
-                                        if isSelected {
-                                            if frozen { return Color.blue.opacity(0.85) }      // selected frozen -> darker blue
-                                            return Color.orange.opacity(0.9)                  // selected learned/empty -> darker orange
-                                        } else {
-                                            return baseColor
+                        // Weekdays row// Weekdays row
+                        VStack(alignment: .leading, spacing: 14) {
+                            
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    ForEach(currentWeekDates, id: \.self) { date in
+                                        let weekday = shortWeekdayFormatter.string(from: date)
+                                        let dayNumber = dayFormatter.string(from: date)
+                                        
+                                        let isSelected = Calendar.current.isDate(date, inSameDayAs: selectedDate)
+                                        let learned = isLogged(date, as: .learned)
+                                        let frozen = isLogged(date, as: .frozen)
+                                        
+                                        // base colors for non-selected states
+                                        let baseColor: Color = {
+                                            if learned { return Color.orange.opacity(0.5) }
+                                            if frozen  { return Color.blue.opacity(0.6) }
+                                            return Color.black.opacity(0.3)
+                                        }()
+                                        
+                                        // final fill color (darker if selected)
+                                        let fillColor: Color = {
+                                            if isSelected {
+                                                if frozen { return Color.blue.opacity(0.85) }      // selected frozen -> darker blue
+                                                return Color.orange.opacity(0.9)                  // selected learned/empty -> darker orange
+                                            } else {
+                                                return baseColor
+                                            }
+                                        }()
+                                        
+                                        VStack(spacing: 5) {
+                                            Text(weekday)
+                                                .font(.caption2)
+                                                .foregroundColor(.secondary)
+                                            
+                                            Text(dayNumber)
+                                                .font(.title.bold())
+                                                .foregroundColor(.primary)
+                                                .frame(width: 40, height: 40)
+                                                .background(
+                                                    Circle()
+                                                        .fill(fillColor)
+                                                        .overlay(
+                                                            // selected ring
+                                                            Circle()
+                                                                .stroke(isSelected ? (frozen ? Color.blue : Color.orange) : Color.clear, lineWidth: isSelected ? 4 : 0)
+                                                        )
+                                                        .animation(.easeInOut(duration: 0.18), value: isSelected)
+                                                ).padding(4)
                                         }
-                                    }()
-
-                                    VStack(spacing: 5) {
-                                        Text(weekday)
-                                            .font(.caption2)
-                                            .foregroundColor(.secondary)
-
-                                        Text(dayNumber)
-                                            .font(.title.bold())
-                                            .foregroundColor(.primary)
-                                            .frame(width: 40, height: 40)
-                                            .background(
-                                                Circle()
-                                                    .fill(fillColor)
-                                                    .overlay(
-                                                        // selected ring
-                                                        Circle()
-                                                            .stroke(isSelected ? (frozen ? Color.blue : Color.orange) : Color.clear, lineWidth: isSelected ? 4 : 0)
-                                                    )
-                                                    .animation(.easeInOut(duration: 0.18), value: isSelected)
-                                            ).padding(4)
-                                    }
-                                    .onTapGesture {
-                                        withAnimation { selectedDate = date }
+                                        .onTapGesture {
+                                            withAnimation { selectedDate = date }
+                                        }
                                     }
                                 }
-}
-                            .padding(.horizontal)
-                            .padding(.vertical,6)
+                                .padding(.horizontal)
+                                .padding(.vertical,6)
+                            }
                         }
+                        
                     }
                     
-                }
-                
-                Text("Learning \(goalSubject)")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                Divider().background(Color.white.opacity(0.1))
-                
-                // Stats cards
-                HStack(spacing: 28) {
-                    HStack(spacing: 30) {
-                        Image(systemName: "flame.fill")
-                            .foregroundColor(.orange)
-                            .font(.title3)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(learnedDays)").bold().foregroundColor(.white)
-                            Text(learnedDays == 1 ? "Day Learned" : "Days Learned")
-                                .font(.caption)
-                                .foregroundColor(.white)
-                        }
-                    }
-                    .padding(.vertical, 9)
-                    .padding(.horizontal, 16)
-                    .background(Color(red: 0.25, green: 0.17, blue: 0.11))
-                    .cornerRadius(30)
-                    .glassEffect() // your original
-                    
-                    HStack(spacing: 30) {
-                        Image(systemName: "cube.fill")
-                            .foregroundColor(.blue)
-                            .font(.title3)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(frozenDays)").bold().foregroundColor(.white)
-                            Text(frozenDays == 1 ? "Day Freezed" : "Days Freezed")
-                                .font(.caption)
-                                .foregroundColor(.white)
-                        }
-                    }
-                    .padding(.vertical, 9)
-                    .padding(.horizontal, 16)
-                    .background(Color(red: 0.13, green: 0.20, blue: 0.25))
-                    .cornerRadius(30)
-                    .glassEffect() // your original
-                }
-                Spacer().padding()
-            }
-            .padding(10)
-            .background(Color(.systemBackground))
-            .cornerRadius(16)
-            
-            // Big circle + buttons
-            VStack(spacing: 16) {
-                let selectedIsLearned = isLogged(selectedDate, as: .learned)
-                let selectedIsFrozen = isLogged(selectedDate, as: .frozen)
-                
-                ZStack {
-                    Circle()
-                        .fill(selectedIsFrozen ? Color.black : (selectedIsLearned ? Color.orange.opacity(0.9)  : Color.orange.opacity(0.7)))
-                        .glassEffect()
-                        .overlay(
-                            Circle().stroke(
-                                selectedIsFrozen ? Color.blue : (selectedIsLearned ? Color.orange : Color.clear),
-                                lineWidth: 10
-                            )
-                        )
-                        .frame(width: 250, height: 250)
-                        .glassEffect() // your original
-                    
-                    Text(selectedIsFrozen ? "Day Frozen" :
-                            selectedIsLearned ? "Learned Today" :
-                            "Log as Learned")
-                    .font(.title)
-                    .bold()
-                    .foregroundColor(.primary)
-                }
-                .onTapGesture {
-                    if !selectedIsLearned && !selectedIsFrozen {
-                        logDay(as: .learned)
-                    }
-                }
-                
-                Button {
-                    logDay(as: .frozen)
-                } label: {
-                    Text(selectedIsFrozen ? "Day Frozen" : "Log as Freezed")
+                    Text("Learning \(goalSubject)")
                         .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(selectedIsFrozen ? Color.black.opacity(0.7) : Color.blue.opacity(0.8))
                         .foregroundColor(.primary)
-                        .cornerRadius(25)
+                    Divider().background(Color.white.opacity(0.1))
+                    
+                    // Stats cards
+                    HStack(spacing: 28) {
+                        HStack(spacing: 30) {
+                            Image(systemName: "flame.fill")
+                                .foregroundColor(.orange)
+                                .font(.title3)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(learnedDays)").bold().foregroundColor(.white)
+                                Text(learnedDays == 1 ? "Day Learned" : "Days Learned")
+                                    .font(.caption)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .padding(.vertical, 9)
+                        .padding(.horizontal, 16)
+                        .background(Color(red: 0.25, green: 0.17, blue: 0.11))
+                        .cornerRadius(30)
                         .glassEffect() // your original
+                        
+                        HStack(spacing: 30) {
+                            Image(systemName: "cube.fill")
+                                .foregroundColor(.blue)
+                                .font(.title3)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(frozenDays)").bold().foregroundColor(.white)
+                                Text(frozenDays == 1 ? "Day Freezed" : "Days Freezed")
+                                    .font(.caption)
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .padding(.vertical, 9)
+                        .padding(.horizontal, 16)
+                        .background(Color(red: 0.13, green: 0.20, blue: 0.25))
+                        .cornerRadius(30)
+                        .glassEffect() // your original
+                    }
+                    Spacer().padding()
                 }
-                .disabled(selectedIsLearned || selectedIsFrozen || frozenDays >= freezeLimit)
+                .padding(10)
+                .background(Color(.systemBackground))
+                .cornerRadius(16)
                 
-                Text("\(frozenDays) out of \(freezeLimit) \(freezeLimit == 1 ? "Freeze" : "Freezes") used")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                // Big circle + buttons
+                VStack(spacing: 16) {
+                    let selectedIsLearned = isLogged(selectedDate, as: .learned)
+                    let selectedIsFrozen = isLogged(selectedDate, as: .frozen)
+                    
+                    ZStack {
+                        Circle()
+                            .fill(selectedIsFrozen ? Color.black : (selectedIsLearned ? Color.orange.opacity(0.9)  : Color.orange.opacity(0.7)))
+                            .glassEffect()
+                            .overlay(
+                                Circle().stroke(
+                                    selectedIsFrozen ? Color.blue : (selectedIsLearned ? Color.orange : Color.clear),
+                                    lineWidth: 10
+                                )
+                            )
+                            .frame(width: 250, height: 250)
+                            .glassEffect() // your original
+                        
+                        Text(selectedIsFrozen ? "Day Frozen" :
+                                selectedIsLearned ? "Learned Today" :
+                                "Log as Learned")
+                        .font(.title)
+                        .bold()
+                        .foregroundColor(.primary)
+                    }
+                    .onTapGesture {
+                        if !selectedIsLearned && !selectedIsFrozen {
+                            logDay(as: .learned)
+                        }
+                    }
+                    
+                    Button {
+                        logDay(as: .frozen)
+                    } label: {
+                        Text(selectedIsFrozen ? "Day Frozen" : "Log as Freezed")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(selectedIsFrozen ? Color.black.opacity(0.7) : Color.blue.opacity(0.8))
+                            .foregroundColor(.primary)
+                            .cornerRadius(25)
+                            .glassEffect() // your original
+                    }
+                    .disabled(selectedIsLearned || selectedIsFrozen || frozenDays >= freezeLimit)
+                    
+                    Text("\(frozenDays) out of \(freezeLimit) \(freezeLimit == 1 ? "Freeze" : "Freezes") used")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                
+                Spacer()
             }
-        
-            
-            Spacer()
-        }
-        .padding()
-        .background(Color(.systemBackground).ignoresSafeArea())
-        .onAppear { checkForStreakReset() }
+            .padding()
+            .background(Color(.systemBackground).ignoresSafeArea())
+            .onAppear { checkForStreakReset() }
             NavigationLink(
                 "",
                 destination: Task3View(
@@ -352,7 +357,17 @@ struct Task2View: View {
                     currentWeekDates: currentWeekDates
                 ),
                 isActive: $weekCompleted
-            ).opacity(0) }
+            ).opacity(0)
+            NavigationLink(destination:
+                Task5(
+                    loggedDays: $loggedDays,
+                    selectedDate: $selectedDate
+                ),
+                isActive: $goToTask5
+            ) {
+                EmptyView()
+            }
+        }
     }
 }
 #Preview {
