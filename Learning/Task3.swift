@@ -15,7 +15,7 @@ import SwiftUI
 struct Task3View: View {
     // Reuse data from Task2
     @State private var goToTask5 = false
-
+    @Environment(\.dismiss) var dismiss
     @Binding var goalSubject:String
     @Binding var goalDuration:String
     @Binding var selectedDate: Date
@@ -32,6 +32,22 @@ struct Task3View: View {
     
     @State private var showMonthPicker = false
     @State private var goToTask4 = false
+    var showCelebration: Bool {
+        learnedDays + frozenDays >= totalDaysRequired()
+    }
+    func totalDaysRequired() -> Int {
+        switch goalDuration.lowercased() {
+        case "week", "1 week", "weekly":
+            return 7
+        case "month", "1 month", "monthly":
+            return 30
+        case "year", "1 year", "yearly":
+            return 365
+        default:
+            return 7
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             
@@ -159,55 +175,59 @@ struct Task3View: View {
                 .cornerRadius(16)
                 
                 // 🎉 GOAL COMPLETED SECTION
-                VStack(spacing:24) {
-                    Image(systemName: "hands.clap.fill")
-                        .font(.system(size: 60))
-                        .foregroundColor(.orange)
-                        .symbolEffect(.wiggle)
-                    
-                    Text("Well done!")
-                        .font(.title3.bold())
-                        .foregroundColor(.primary)
-                    
-                    Text("                               Goal completed! \n You can start learning again or set new learning goal")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    
-                    NavigationLink(destination: Task4(), isActive: $goToTask4) {
-                        EmptyView()
-                    }
-                    NavigationLink(destination:
-                        Task5(
-                            loggedDays: $loggedDays,
-                            selectedDate: $selectedDate
-                        ),
-                        isActive: $goToTask5
-                    ) {
-                        EmptyView()
-                    }
-                    Button {
-                        goToTask4 = true
-                    } label: {
-                        Text("Set new learning goal")
-                            .font(.headline)
-                            .bold()
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.orange)
-                            .foregroundColor(.primary)
-                            .cornerRadius(25)
-                            .glassEffect()
-                    }
-                    
-                    Button {
-                        // Keep same goal logic
-                    } label: {
-                        Text("Set same learning goal and duration")
-                            .font(.subheadline)
+                if showCelebration {
+                    VStack(spacing:24) {
+                        Image(systemName: "hands.clap.fill")
+                            .font(.system(size: 60))
                             .foregroundColor(.orange)
+                            .symbolEffect(.wiggle)
+                        
+                        Text("Well done!")
+                            .font(.title3.bold())
+                            .foregroundColor(.primary)
+                        
+                        Text("Goal completed! \n You can start learning again or set new learning goal")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        NavigationLink(destination: Task4(), isActive: $goToTask4) {
+                            EmptyView()
+                        }
+                        NavigationLink(destination:
+                            Task5(
+                                loggedDays: $loggedDays,
+                                selectedDate: $selectedDate
+                            ),
+                            isActive: $goToTask5
+                        ) {
+                            EmptyView()
+                        }
+                        
+                        Button {
+                            goToTask4 = true
+                        } label: {
+                            Text("Set new learning goal")
+                                .font(.headline)
+                                .bold()
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.orange)
+                                .foregroundColor(.primary)
+                                .cornerRadius(25)
+                                .glassEffect()
+                        }
+                        
+                        Button {
+                            dismiss()
+                            // Keep same goal logic
+                        } label: {
+                            Text("Set same learning goal and duration")
+                                .font(.subheadline)
+                                .foregroundColor(.orange)
+                        }
                     }
+                    .padding()
                 }
-                .padding()
                 
                 Spacer()
             }

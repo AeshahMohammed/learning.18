@@ -78,7 +78,18 @@ struct Task2View: View {
     func isAnyLogged(_ date: Date) -> Bool {
         loggedDays.contains(where: { startOfDay($0.date) == startOfDay(date) })
     }
-
+    func totalDaysRequired() -> Int {
+        switch goalDuration.lowercased() {
+        case "week", "1 week", "weekly":
+            return 7
+        case "month", "1 month", "monthly":
+            return 30
+        case "year", "1 year", "yearly":
+            return 365
+        default:
+            return 7
+        }
+    }
     func logDay(as status: DayStatus) {
         guard !isAnyLogged(selectedDate) else { return }
         if status == .frozen {
@@ -89,7 +100,7 @@ struct Task2View: View {
         }
         loggedDays.append(LoggedDay(date: selectedDate, status: status))
         lastLogDate = Date()
-        if learnedDays + frozenDays >= 7 {
+        if learnedDays + frozenDays >= totalDaysRequired() {
             weekCompleted = true
         }
     }
