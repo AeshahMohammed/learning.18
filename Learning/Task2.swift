@@ -19,13 +19,15 @@ enum DayStatus {
 }
 
 struct Task2View: View {
+    @Binding var goalSubject: String
+    @Binding  var goalDuration: String
     @State private var selectedDate :Date = Date()
     @State private var learnedDays = 0
     @State private var frozenDays = 0
     @State private var showMonthPicker = false
     @State private var loggedDays: [LoggedDay] = []
     @State private var lastLogDate: Date? = nil
-    @State private var learningGoalUpdated = false
+    @State private var learningGoalUpdated = true
     @State private var weekCompleted = false
 
     let freezeLimit = 2
@@ -231,7 +233,7 @@ struct Task2View: View {
                     
                 }
                 
-                Text("Learning Swift")
+                Text("Learning \(goalSubject)")
                     .font(.headline)
                     .foregroundColor(.primary)
                 Divider().background(Color.white.opacity(0.1))
@@ -334,23 +336,28 @@ struct Task2View: View {
         .padding()
         .background(Color(.systemBackground).ignoresSafeArea())
         .onAppear { checkForStreakReset() }
-        NavigationLink("", destination: Task3View(
-        selectedDate: $selectedDate,
-        learnedDays: $learnedDays,
-        frozenDays: $frozenDays,
-        loggedDays: $loggedDays,
-        monthYearFormatter: monthYearFormatter,
-        shortWeekdayFormatter: shortWeekdayFormatter,
-        dayFormatter: dayFormatter,
-        colorFor: colorFor(date:),
-        currentWeekDates: currentWeekDates),
-    isActive: $weekCompleted).opacity(0) }
+            NavigationLink(
+                "",
+                destination: Task3View(
+                    goalSubject: $goalSubject,
+                    goalDuration: $goalDuration,
+                    selectedDate: $selectedDate,
+                    learnedDays: $learnedDays,
+                    frozenDays: $frozenDays,
+                    loggedDays: $loggedDays,
+                    monthYearFormatter: monthYearFormatter,
+                    shortWeekdayFormatter: shortWeekdayFormatter,
+                    dayFormatter: dayFormatter,
+                    colorFor: colorFor(date:),
+                    currentWeekDates: currentWeekDates
+                ),
+                isActive: $weekCompleted
+            ).opacity(0) }
     }
 }
-
 #Preview {
-    Task2View()
+    Task2View(
+        goalSubject: .constant("Swift"),
+        goalDuration: .constant("2 weeks")
+    )
 }
-
-
-

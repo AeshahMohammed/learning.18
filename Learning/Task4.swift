@@ -4,9 +4,12 @@
 //
 //  Created by aeshah mohammed alabdulkarim on 24/10/2025.
 //
+// 
+
 import SwiftUI
 
-struct LearningGoalView: View {
+struct Task4: View {
+    @State private var goToTask2 = false
     @Environment(\.dismiss) var dismiss
     @State private var goalText: String = ""
     @State private var selectedDuration: String = "Month"
@@ -14,7 +17,10 @@ struct LearningGoalView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading, spacing: 24) {NavigationLink(destination: Task2View(goalSubject: $goalText, goalDuration: $selectedDuration), isActive: $goToTask2) {
+                EmptyView()
+            }
+
                 HStack{
                 
                     Button {dismiss()
@@ -122,8 +128,8 @@ struct LearningGoalView: View {
                                 .cornerRadius(20)
 
                                 Button("Update") {
-                                    dismiss()
-                                }
+                                    showConfirmation = false
+                                        goToTask2 = true                                }
                                 .foregroundColor(.primary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 10)
@@ -149,6 +155,6 @@ struct LearningGoalView: View {
 }
 
 #Preview {
-    LearningGoalView()
+    Task4()
 }
 

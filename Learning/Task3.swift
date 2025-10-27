@@ -8,10 +8,14 @@
 
 //  ContentView.swift
 //  Learning
+
+
 import SwiftUI
 
 struct Task3View: View {
     // Reuse data from Task2
+    @Binding var goalSubject:String
+    @Binding var goalDuration:String
     @Binding var selectedDate: Date
     @Binding var learnedDays: Int
     @Binding var frozenDays: Int
@@ -42,10 +46,10 @@ struct Task3View: View {
                     HStack(spacing: 16) {
                         Button(action: {}) { Image(systemName: "calendar") }
                         Button(action: {}) { Image(systemName: "person.circle") }
-                       
+                        
                     }.padding(10)
-                    .font(.title3)
-                    .foregroundColor(.primary)
+                        .font(.title3)
+                        .foregroundColor(.primary)
                 }
                 .padding(.top, 20)
                 
@@ -101,8 +105,7 @@ struct Task3View: View {
                     }
                     
                     // Learning Swift Section
-                    Text("Learning Swift")
-                        .font(.headline)
+                    Text("Learning \(goalSubject)")                        .font(.headline)
                         .foregroundColor(.primary)
                     Divider().background(Color.white.opacity(0.1))
                     
@@ -164,10 +167,10 @@ struct Task3View: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
-                    NavigationLink(destination: LearningGoalView(), isActive: $goToTask4) {
+                    NavigationLink(destination: Task4(), isActive: $goToTask4) {
                         EmptyView()
                     }
-
+                    
                     Button {
                         goToTask4 = true
                     } label: {
@@ -198,38 +201,56 @@ struct Task3View: View {
             .background(Color(.systemBackground).ignoresSafeArea())
             .navigationBarBackButtonHidden(true)
             
-        }
-    }
-}
-
-#Preview {
-    let calendar = Calendar.current
-    let today = Date()
-    let startOfWeek = calendar.dateInterval(of: .weekOfMonth, for: today)!.start
-    let weekDates = (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: startOfWeek) }
-    
-    return Task3View(
-        selectedDate: .constant(Date()),
-        learnedDays: .constant(7),
-        frozenDays: .constant(1),
-        loggedDays: .constant([]),
-        monthYearFormatter: {
-            let f = DateFormatter()
-            f.dateFormat = "LLLL yyyy"
-            return f
-        }(),
-        shortWeekdayFormatter: {
-            let f = DateFormatter()
-            f.dateFormat = "E"
-            return f
-        }(),
-        dayFormatter: {
-            let f = DateFormatter()
-            f.dateFormat = "d"
-            return f
-        }(),
-        colorFor: { _ in Color.orange },
-        currentWeekDates: weekDates
-    )
-}
-
+        }}}
+            
+            #Preview {
+                Task3View(
+                    goalSubject: .constant("Swift"),
+                    goalDuration: .constant("2 weeks"),
+                    selectedDate: .constant(Date()),
+                    learnedDays: .constant(3),
+                    frozenDays: .constant(1),
+                    loggedDays: .constant([]),
+                    monthYearFormatter: {
+                        let f = DateFormatter()
+                        f.dateFormat = "MMMM yyyy"
+                        return f
+                    }(),
+                    shortWeekdayFormatter: {
+                        let f = DateFormatter()
+                        f.dateFormat = "EEE"
+                        return f
+                    }(),
+                    dayFormatter: {
+                        let f = DateFormatter()
+                        f.dateFormat = "d"
+                        return f
+                    }(),
+                    colorFor: { _ in .orange },
+                    currentWeekDates: {
+                        let calendar = Calendar.current
+                        let today = Date()
+                        let startOfWeek = calendar.dateInterval(of: .weekOfMonth, for: today)!.start
+                        return (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: startOfWeek) }
+                    }()
+                )
+            }
+            
+            /* #Preview {
+             let calendar = Calendar.current
+             let today = Date()
+             let startOfWeek = calendar.dateInterval(of: .weekOfMonth, for: today)!.start
+             let weekDates = (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: startOfWeek) }
+             
+             NavigationLink( destination: Task3View(
+             goalSubject: $goalSubject,
+             goalDuration: $goalDuration,
+             selectedDate: $selectedDate, learnedDays: $learnedDays, frozenDays: $frozenDays, loggedDays: $loggedDays, monthYearFormatter: monthYearFormatter, shortWeekdayFormatter: shortWeekdayFormatter, dayFormatter: dayFormatter, colorFor: colorFor, // pass function reference
+             currentWeekDates: currentWeekDates
+             ),
+             isActive: $weekCompleted
+             )
+             .opacity(0)
+             
+             }*/
+           

@@ -50,14 +50,17 @@ struct Task1: View {
                         Text("I want to learn")
                             .foregroundColor(.primary)
                             .font(.headline)
-                        
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal)
-                    
-                    Divider()
-                        .background(Color.secondary)
+                        TextField("Enter your subject", text: $subject)
+                                .textFieldStyle(.plain)
+                                .padding(.vertical, 8)
+                        Divider()
+                                     .background(Color.secondary)
+                                //.foregroundColor(.primary)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
+                
+              
                     
                     // Duration picker
                     VStack(alignment: .leading, spacing: 10) {
@@ -90,7 +93,7 @@ struct Task1: View {
                     Spacer()
                     
                     // Start button
-                    NavigationLink(destination: Task2View()) {
+                    NavigationLink(destination: Task2View(goalSubject: $subject, goalDuration: $selectedDuration)) {
                         Text("Start learning")
                             .fontWeight(.semibold)
                             .padding()
