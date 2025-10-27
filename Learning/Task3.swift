@@ -249,22 +249,4 @@ struct Task3View: View {
                     }()
                 )
             }
-            
-            /* #Preview {
-             let calendar = Calendar.current
-             let today = Date()
-             let startOfWeek = calendar.dateInterval(of: .weekOfMonth, for: today)!.start
-             let weekDates = (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: startOfWeek) }
-             
-             NavigationLink( destination: Task3View(
-             goalSubject: $goalSubject,
-             goalDuration: $goalDuration,
-             selectedDate: $selectedDate, learnedDays: $learnedDays, frozenDays: $frozenDays, loggedDays: $loggedDays, monthYearFormatter: monthYearFormatter, shortWeekdayFormatter: shortWeekdayFormatter, dayFormatter: dayFormatter, colorFor: colorFor, // pass function reference
-             currentWeekDates: currentWeekDates
-             ),
-             isActive: $weekCompleted
-             )
-             .opacity(0)
-             
-             }*/
-           
+                       

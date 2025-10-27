@@ -79,3 +79,13 @@ struct Task5: View {
         return days
     }
 }
+#Preview {
+    Task5(
+        loggedDays: .constant([
+            LoggedDay(date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, status: .learned),
+            LoggedDay(date: Calendar.current.date(byAdding: .day, value: -5, to: Date())!, status: .frozen),
+            LoggedDay(date: Calendar.current.date(byAdding: .day, value: -7, to: Date())!, status: .learned)
+        ]),
+        selectedDate: .constant(Date())
+    )
+}

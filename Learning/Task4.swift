@@ -71,8 +71,7 @@ struct Task4: View {
                 HStack(spacing: 16) {
                     ForEach(["Week", "Month", "Year"], id: \.self) { duration in
                         Button {
-                            selectedDuration = duration
-                        } label: {
+                            selectedDuration = duration } label: {
                             Text(duration)
                                 .padding(.vertical, 8)
                                 .padding(.horizontal, 20)
@@ -81,9 +80,8 @@ struct Task4: View {
                                         .fill(selectedDuration == duration ? Color.orange : Color.primary.opacity(0.3))
                                 )
                                 .foregroundColor(.primary)
-                        }
-                    }
-                }
+                        }                    }                }
+
                 
                 Spacer()
             }
@@ -142,7 +140,7 @@ struct Task4: View {
                         .cornerRadius(16)
                      .shadow(radius: 16)
                   .frame(maxWidth: 300)
-                 // .glassEffect()
+                 .glassEffect()
                     }
                     .transition(.opacity)
                     .animation(.easeInOut, value: showConfirmation)

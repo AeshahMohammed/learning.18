@@ -126,6 +126,11 @@ struct Task2View: View {
             VStack(alignment: .leading, spacing: 20) {
                 // Header
                 HStack {
+                    NavigationLink(destination:
+    Task5(loggedDays: $loggedDays,
+     selectedDate: $selectedDate),isActive: $goToTask5) {EmptyView()
+      }
+
                     Text("Activity")
                         .font(.largeTitle)
                         .bold()
@@ -341,6 +346,7 @@ struct Task2View: View {
             .padding()
             .background(Color(.systemBackground).ignoresSafeArea())
             .onAppear { checkForStreakReset() }
+          
             NavigationLink(
                 "",
                 destination: Task3View(
@@ -358,15 +364,7 @@ struct Task2View: View {
                 ),
                 isActive: $weekCompleted
             ).opacity(0)
-            NavigationLink(destination:
-                Task5(
-                    loggedDays: $loggedDays,
-                    selectedDate: $selectedDate
-                ),
-                isActive: $goToTask5
-            ) {
-                EmptyView()
-            }
+        
         }
     }
 }
