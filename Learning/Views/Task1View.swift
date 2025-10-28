@@ -20,7 +20,7 @@ struct Task1View: View {
                 
                 VStack(spacing: 30) {
                     
-                    // MARK: - App logo
+                    // App logo
                     Circle()
                         .fill(Color(.systemBackground))
                         .frame(width: 120, height: 120)
@@ -31,9 +31,10 @@ struct Task1View: View {
                                 .foregroundColor(.orange.opacity(1.0))
                                 .frame(width: 50, height: 50)
                         )
-                        .glassEffect() // ✅ keep your custom effect
+                        
+                    .glassEffect() // ✅ keep your custom effect
                     
-                    // MARK: - Intro Texts
+                    //Intro Texts
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Hello Learner")
                             .font(.largeTitle.bold())
@@ -45,7 +46,7 @@ struct Task1View: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
                     
-                    // MARK: - Learning Subject
+                    // Learning Subject
                     VStack(alignment: .leading, spacing: 10) {
                         Text("I want to learn")
                             .foregroundColor(.primary)
@@ -61,7 +62,7 @@ struct Task1View: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
                     
-                    // MARK: - Duration Picker
+                    //  Duration Picker
                     VStack(alignment: .leading, spacing: 10) {
                         Text("I want to learn it in a")
                             .foregroundColor(.secondary)
@@ -93,7 +94,7 @@ struct Task1View: View {
                     
                     Spacer()
                     
-                    // MARK: - Start Button
+                    // Start Button
                     NavigationLink(
                         destination: Task2View(
                             goalSubject: $viewModel.subject,

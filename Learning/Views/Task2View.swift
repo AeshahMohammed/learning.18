@@ -240,7 +240,7 @@ struct Task2View: View {
                 }
 
                 Spacer()
-            }
+            }.navigationBarBackButtonHidden(true)
             .padding()
             .background(Color(.systemBackground).ignoresSafeArea())
             .onAppear { viewModel.checkForStreakReset() }
