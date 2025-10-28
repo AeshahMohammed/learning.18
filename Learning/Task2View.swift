@@ -1,135 +1,26 @@
 //
-//  Task2.swift
+//  Task2View.swift
 //  Learning
 //
-//  Created by aeshah mohammed alabdulkarim on 23/10/2025.
+//  Created by aeshah mohammed alabdulkarim on 28/10/2025.
 //
+
+
 
 import SwiftUI
 
-struct LoggedDay: Identifiable, Hashable {
-    let id = UUID()
-    let date: Date
-    var status: DayStatus
-}
-
-enum DayStatus {
-    case learned
-    case frozen
-}
-
 struct Task2View: View {
     @Binding var goalSubject: String
-    @Binding  var goalDuration: String
-    @State private var goToTask5 = false
+    @Binding var goalDuration: String
 
-    @State private var selectedDate :Date = Date()
-    @State private var learnedDays = 0
-    @State private var frozenDays = 0
-    @State private var showMonthPicker = false
-    @State private var loggedDays: [LoggedDay] = []
-    @State private var lastLogDate: Date? = nil
-    @State private var learningGoalUpdated = true
-    @State private var weekCompleted = false
+    // initialize StateObject with the bindings so the VM reads the latest goal values
+    @StateObject private var viewModel: Task2ViewModel
 
-    let freezeLimit = 2
-
-    // Ensure all comparisons are normalized
-    func startOfDay(_ date: Date) -> Date {
-        Calendar.current.startOfDay(for: date)
-    }
-
-    var currentWeekDates: [Date] {
-        let calendar = Calendar.current
-        guard let weekInterval = calendar.dateInterval(of: .weekOfMonth, for: selectedDate) else { return [] }
-        return (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: startOfDay(weekInterval.start)) }
-    }
-
-    func changeWeek(by value: Int) {
-        if let newDate = Calendar.current.date(byAdding: .weekOfMonth, value: value, to: selectedDate) {
-            selectedDate = startOfDay(newDate)
-        }
-    }
-
-    var monthYearFormatter: DateFormatter {
-        let f = DateFormatter()
-        f.dateFormat = "LLLL yyyy"
-        return f
-    }
-
-    var dayFormatter: DateFormatter {
-        let f = DateFormatter()
-        f.calendar = Calendar.current
-        f.locale = Locale(identifier: "en_US_POSIX")
-        f.dateFormat = "d"
-        return f
-    }
-
-    var shortWeekdayFormatter: DateFormatter {
-        let f = DateFormatter()
-        f.dateFormat = "E"
-        return f
-    }
-
-    func isLogged(_ date: Date, as status: DayStatus) -> Bool {
-        loggedDays.contains(where: { startOfDay($0.date) == startOfDay(date) && $0.status == status })
-    }
-
-    func isAnyLogged(_ date: Date) -> Bool {
-        loggedDays.contains(where: { startOfDay($0.date) == startOfDay(date) })
-    }
-    func totalDaysRequired() -> Int {
-        switch goalDuration.lowercased() {
-        case "week", "1 week", "weekly":
-            return 7
-        case "month", "1 month", "monthly":
-            return 30
-        case "year", "1 year", "yearly":
-            return 365
-        default:
-            return 7
-        }
-    }
-    func logDay(as status: DayStatus) {
-        guard !isAnyLogged(selectedDate) else { return }
-        if status == .frozen {
-            guard frozenDays < freezeLimit else { return }
-            frozenDays += 1
-        } else {
-            learnedDays += 1
-        }
-        loggedDays.append(LoggedDay(date: selectedDate, status: status))
-        lastLogDate = Date()
-        if learnedDays + frozenDays >= totalDaysRequired() {
-            weekCompleted = true
-        }
-    }
-
-    func colorFor(date: Date) -> Color {
-        if isLogged(date, as: .learned) {
-            return Calendar.current.isDate(date, inSameDayAs: selectedDate) ? Color.orange : Color.orange.opacity(0.5)
-        }
-        if isLogged(date, as: .frozen) {
-            return Color.blue.opacity(0.6)
-        }
-        return Color.black.opacity(0.3)
-    }
-
-    func checkForStreakReset() {
-        if learningGoalUpdated {
-            learnedDays = 0
-            frozenDays = 0
-            loggedDays.removeAll()
-            learningGoalUpdated = false
-            return
-        }
-        guard let last = lastLogDate else { return }
-        let hoursSinceLast = Date().timeIntervalSince(last) / 3600
-        if hoursSinceLast > 32 {
-            learnedDays = 0
-            frozenDays = 0
-            loggedDays.removeAll()
-        }
+    // custom init so we can create the StateObject with bindings
+    init(goalSubject: Binding<String>, goalDuration: Binding<String>) {
+        self._goalSubject = goalSubject
+        self._goalDuration = goalDuration
+        self._viewModel = StateObject(wrappedValue: Task2ViewModel(goalSubject: goalSubject, goalDuration: goalDuration))
     }
 
     var body: some View {
@@ -138,9 +29,9 @@ struct Task2View: View {
                 // Header
                 HStack {
                     NavigationLink(destination:
-    Task5(loggedDays: $loggedDays,
-     selectedDate: $selectedDate),isActive: $goToTask5) {EmptyView()
-      }
+                                    Task5(loggedDays: $viewModel.loggedDays,
+                                          selectedDate: $viewModel.selectedDate),
+                                   isActive: $viewModel.goToTask5) { EmptyView() }
 
                     Text("Activity")
                         .font(.largeTitle)
@@ -148,8 +39,7 @@ struct Task2View: View {
                         .foregroundColor(.primary)
                     Spacer()
                     HStack(spacing: 16) {
-                        
-                        Button(action: { goToTask5 = true }) {
+                        Button(action: { viewModel.goToTask5 = true }) {
                             Image(systemName: "calendar")
                         }
                         Button(action: {}) { Image(systemName: "person.circle") }
@@ -158,60 +48,58 @@ struct Task2View: View {
                     .foregroundColor(.primary)
                 }
                 .padding(.top, 20)
-                
+
                 VStack(alignment: .leading, spacing: 16) {
                     // Month + Week
                     VStack(alignment: .leading, spacing: 16) {
                         HStack {
-                            Button(action: { withAnimation { showMonthPicker.toggle() } }) {
+                            Button(action: { withAnimation { viewModel.showMonthPicker.toggle() } }) {
                                 HStack(spacing: 4) {
-                                    Text(selectedDate, formatter: monthYearFormatter)
+                                    Text(viewModel.selectedDate, formatter: viewModel.monthYearFormatter)
                                         .font(.headline)
                                         .foregroundColor(.primary)
                                     Image(systemName: "chevron.down")
                                         .foregroundColor(.orange)
-                                        .rotationEffect(.degrees(showMonthPicker ? 180 : 0))
+                                        .rotationEffect(.degrees(viewModel.showMonthPicker ? 180 : 0))
                                 }
                             }
                             Spacer()
                             HStack(spacing: 16) {
-                                Button(action: { changeWeek(by: -1) }) { Image(systemName: "chevron.left").foregroundColor(.orange) }
-                                Button(action: { changeWeek(by: 1) }) { Image(systemName: "chevron.right").foregroundColor(.orange) }
+                                Button(action: { viewModel.changeWeek(by: -1) }) { Image(systemName: "chevron.left").foregroundColor(.orange) }
+                                Button(action: { viewModel.changeWeek(by: 1) }) { Image(systemName: "chevron.right").foregroundColor(.orange) }
                             }
                         }
-                        
-                        if showMonthPicker {
-                            DatePicker("", selection: $selectedDate, displayedComponents: [.date])
+
+                        if viewModel.showMonthPicker {
+                            DatePicker("", selection: $viewModel.selectedDate, displayedComponents: [.date])
                                 .datePickerStyle(.wheel)
                                 .labelsHidden()
                                 .colorScheme(.dark)
                                 .transition(.opacity)
-                                .onChange(of: selectedDate) { _ in
-                                    withAnimation { showMonthPicker = false }
+                                .onChange(of: viewModel.selectedDate) { _ in
+                                    withAnimation { viewModel.showMonthPicker = false }
                                 }
                         }
-                        
-                        // Weekdays row// Weekdays row
+
+                        // Weekdays row
                         VStack(alignment: .leading, spacing: 14) {
-                            
-                            
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
-                                    ForEach(currentWeekDates, id: \.self) { date in
-                                        let weekday = shortWeekdayFormatter.string(from: date)
-                                        let dayNumber = dayFormatter.string(from: date)
-                                        
-                                        let isSelected = Calendar.current.isDate(date, inSameDayAs: selectedDate)
-                                        let learned = isLogged(date, as: .learned)
-                                        let frozen = isLogged(date, as: .frozen)
-                                        
+                                    ForEach(viewModel.currentWeekDates, id: \.self) { date in
+                                        let weekday = viewModel.shortWeekdayFormatter.string(from: date)
+                                        let dayNumber = viewModel.dayFormatter.string(from: date)
+
+                                        let isSelected = Calendar.current.isDate(date, inSameDayAs: viewModel.selectedDate)
+                                        let learned = viewModel.isLogged(date, as: .learned)
+                                        let frozen = viewModel.isLogged(date, as: .frozen)
+
                                         // base colors for non-selected states
                                         let baseColor: Color = {
                                             if learned { return Color.orange.opacity(0.5) }
                                             if frozen  { return Color.blue.opacity(0.6) }
                                             return Color.black.opacity(0.3)
                                         }()
-                                        
+
                                         // final fill color (darker if selected)
                                         let fillColor: Color = {
                                             if isSelected {
@@ -221,12 +109,12 @@ struct Task2View: View {
                                                 return baseColor
                                             }
                                         }()
-                                        
+
                                         VStack(spacing: 5) {
                                             Text(weekday)
                                                 .font(.caption2)
                                                 .foregroundColor(.secondary)
-                                            
+
                                             Text(dayNumber)
                                                 .font(.title.bold())
                                                 .foregroundColor(.primary)
@@ -243,7 +131,7 @@ struct Task2View: View {
                                                 ).padding(4)
                                         }
                                         .onTapGesture {
-                                            withAnimation { selectedDate = date }
+                                            withAnimation { viewModel.selectedDate = date }
                                         }
                                     }
                                 }
@@ -251,14 +139,14 @@ struct Task2View: View {
                                 .padding(.vertical,6)
                             }
                         }
-                        
+
                     }
-                    
+
                     Text("Learning \(goalSubject)")
                         .font(.headline)
                         .foregroundColor(.primary)
                     Divider().background(Color.white.opacity(0.1))
-                    
+
                     // Stats cards
                     HStack(spacing: 28) {
                         HStack(spacing: 30) {
@@ -266,8 +154,8 @@ struct Task2View: View {
                                 .foregroundColor(.orange)
                                 .font(.title3)
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("\(learnedDays)").bold().foregroundColor(.white)
-                                Text(learnedDays == 1 ? "Day Learned" : "Days Learned")
+                                Text("\(viewModel.learnedDays)").bold().foregroundColor(.white)
+                                Text(viewModel.learnedDays == 1 ? "Day Learned" : "Days Learned")
                                     .font(.caption)
                                     .foregroundColor(.white)
                             }
@@ -276,15 +164,15 @@ struct Task2View: View {
                         .padding(.horizontal, 16)
                         .background(Color(red: 0.25, green: 0.17, blue: 0.11))
                         .cornerRadius(30)
-                        .glassEffect() // your original
-                        
+                        .glassEffect()
+
                         HStack(spacing: 30) {
                             Image(systemName: "cube.fill")
                                 .foregroundColor(.blue)
                                 .font(.title3)
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("\(frozenDays)").bold().foregroundColor(.white)
-                                Text(frozenDays == 1 ? "Day Freezed" : "Days Freezed")
+                                Text("\(viewModel.frozenDays)").bold().foregroundColor(.white)
+                                Text(viewModel.frozenDays == 1 ? "Day Freezed" : "Days Freezed")
                                     .font(.caption)
                                     .foregroundColor(.white)
                             }
@@ -293,19 +181,19 @@ struct Task2View: View {
                         .padding(.horizontal, 16)
                         .background(Color(red: 0.13, green: 0.20, blue: 0.25))
                         .cornerRadius(30)
-                        .glassEffect() // your original
+                        .glassEffect()
                     }
                     Spacer().padding()
                 }
                 .padding(10)
                 .background(Color(.systemBackground))
                 .cornerRadius(16)
-                
+
                 // Big circle + buttons
                 VStack(spacing: 16) {
-                    let selectedIsLearned = isLogged(selectedDate, as: .learned)
-                    let selectedIsFrozen = isLogged(selectedDate, as: .frozen)
-                    
+                    let selectedIsLearned = viewModel.isLogged(viewModel.selectedDate, as: .learned)
+                    let selectedIsFrozen = viewModel.isLogged(viewModel.selectedDate, as: .frozen)
+
                     ZStack {
                         Circle()
                             .fill(selectedIsFrozen ? Color.black : (selectedIsLearned ? Color.orange.opacity(0.9)  : Color.orange.opacity(0.7)))
@@ -317,8 +205,8 @@ struct Task2View: View {
                                 )
                             )
                             .frame(width: 250, height: 250)
-                            .glassEffect() // your original
-                        
+                            .glassEffect()
+
                         Text(selectedIsFrozen ? "Day Frozen" :
                                 selectedIsLearned ? "Learned Today" :
                                 "Log as Learned")
@@ -328,60 +216,61 @@ struct Task2View: View {
                     }
                     .onTapGesture {
                         if !selectedIsLearned && !selectedIsFrozen {
-                            logDay(as: .learned)
+                            viewModel.logDay(as: .learned)
                         }
                     }
-                    
+
                     Button {
-                        logDay(as: .frozen)
+                        viewModel.logDay(as: .frozen)
                     } label: {
-                        Text(selectedIsFrozen ? "Day Frozen" : "Log as Freezed")
+                        Text(viewModel.isLogged(viewModel.selectedDate, as: .frozen) ? "Day Frozen" : "Log as Freezed")
                             .font(.headline)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(selectedIsFrozen ? Color.black.opacity(0.7) : Color.blue.opacity(0.8))
+                            .background(viewModel.isLogged(viewModel.selectedDate, as: .frozen) ? Color.black.opacity(0.7) : Color.blue.opacity(0.8))
                             .foregroundColor(.primary)
                             .cornerRadius(25)
-                            .glassEffect() // your original
+                            .glassEffect()
                     }
-                    .disabled(selectedIsLearned || selectedIsFrozen || frozenDays >= freezeLimit)
-                    
-                    Text("\(frozenDays) out of \(freezeLimit) \(freezeLimit == 1 ? "Freeze" : "Freezes") used")
+                    .disabled(viewModel.isLogged(viewModel.selectedDate, as: .learned) || viewModel.isLogged(viewModel.selectedDate, as: .frozen) || viewModel.frozenDays >= viewModel.freezeLimit)
+
+                    Text("\(viewModel.frozenDays) out of \(viewModel.freezeLimit) \(viewModel.freezeLimit == 1 ? "Freeze" : "Freezes") used")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
-                
+
                 Spacer()
             }
             .padding()
             .background(Color(.systemBackground).ignoresSafeArea())
-            .onAppear { checkForStreakReset() }
-          
+            .onAppear { viewModel.checkForStreakReset() }
+
             NavigationLink(
                 "",
                 destination: Task3View(
                     goalSubject: $goalSubject,
                     goalDuration: $goalDuration,
-                    selectedDate: $selectedDate,
-                    learnedDays: $learnedDays,
-                    frozenDays: $frozenDays,
-                    loggedDays: $loggedDays,
-                    monthYearFormatter: monthYearFormatter,
-                    shortWeekdayFormatter: shortWeekdayFormatter,
-                    dayFormatter: dayFormatter,
-                    colorFor: colorFor(date:),
-                    currentWeekDates: currentWeekDates
+                    selectedDate: $viewModel.selectedDate,
+                    learnedDays: $viewModel.learnedDays,
+                    frozenDays: $viewModel.frozenDays,
+                    loggedDays: $viewModel.loggedDays,
+                    monthYearFormatter: viewModel.monthYearFormatter,
+                    shortWeekdayFormatter: viewModel.shortWeekdayFormatter,
+                    dayFormatter: viewModel.dayFormatter,
+                    colorFor: viewModel.colorFor(date:),
+                    currentWeekDates: viewModel.currentWeekDates
                 ),
-                isActive: $weekCompleted
+                isActive: $viewModel.weekCompleted
             ).opacity(0)
-        
         }
     }
 }
-#Preview {
-    Task2View(
-        goalSubject: .constant("Swift"),
-        goalDuration: .constant("2 weeks")
-    )
+
+struct Task2View_Previews: PreviewProvider {
+    static var previews: some View {
+        Task2View(
+            goalSubject: .constant("Swift"),
+            goalDuration: .constant("2 weeks")
+        )
+    }
 }

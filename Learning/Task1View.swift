@@ -1,39 +1,39 @@
 //
-//  Task1.swift
+//  Task1View.swift
 //  Learning
 //
-//  Created by aeshah mohammed alabdulkarim on 26/10/2025.
+//  Created by aeshah mohammed alabdulkarim on 28/10/2025.
 //
+
+
 
 import SwiftUI
 
-struct Task1: View {
-    @State private var selectedDuration = "Week"
-    @State private var subject = "Swift"
+struct Task1View: View {
+    @StateObject private var viewModel = Task1ViewModel()
     
     var body: some View {
-        NavigationStack  {
-                        ZStack {
-                            Color(.systemBackground)
-                                .ignoresSafeArea()
+        NavigationStack {
+            ZStack {
+                Color(.systemBackground)
+                    .ignoresSafeArea()
                 
                 VStack(spacing: 30) {
                     
-                    // App logo
+                    // MARK: - App logo
                     Circle()
                         .fill(Color(.systemBackground))
                         .frame(width: 120, height: 120)
                         .overlay(
                             Image(systemName: "flame.fill")
-                                
                                 .resizable()
                                 .scaledToFit()
-                                .foregroundColor(.orange.opacity(100))
+                                .foregroundColor(.orange.opacity(1.0))
                                 .frame(width: 50, height: 50)
                         )
-                        .glassEffect()
+                        .glassEffect() // ✅ keep your custom effect
                     
-                    // Intro texts
+                    // MARK: - Intro Texts
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Hello Learner")
                             .font(.largeTitle.bold())
@@ -45,24 +45,23 @@ struct Task1: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
                     
-                    // Learning subject
+                    // MARK: - Learning Subject
                     VStack(alignment: .leading, spacing: 10) {
                         Text("I want to learn")
                             .foregroundColor(.primary)
                             .font(.headline)
-                        TextField("Enter your subject", text: $subject)
-                                .textFieldStyle(.plain)
-                                .padding(.vertical, 8)
+                        
+                        TextField("Enter your subject", text: $viewModel.subject)
+                            .textFieldStyle(.plain)
+                            .padding(.vertical, 8)
+                        
                         Divider()
-                                     .background(Color.secondary)
-                                //.foregroundColor(.primary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal)
-                
-              
+                            .background(Color.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal)
                     
-                    // Duration picker
+                    // MARK: - Duration Picker
                     VStack(alignment: .leading, spacing: 10) {
                         Text("I want to learn it in a")
                             .foregroundColor(.secondary)
@@ -71,7 +70,7 @@ struct Task1: View {
                         HStack(spacing: 8) {
                             ForEach(["Week", "Month", "Year"], id: \.self) { duration in
                                 Button(action: {
-                                    selectedDuration = duration
+                                    viewModel.selectedDuration = duration
                                 }) {
                                     Text(duration)
                                         .fontWeight(.medium)
@@ -80,7 +79,9 @@ struct Task1: View {
                                         .glassEffect(.clear)
                                         .background(
                                             Capsule()
-                                                .fill(selectedDuration == duration ? Color.darkOrange.opacity(0.9): Color.gray.opacity(0.05))
+                                                .fill(viewModel.selectedDuration == duration
+                                                      ? Color.darkOrange.opacity(0.9)
+                                                      : Color.gray.opacity(0.05))
                                         )
                                         .foregroundColor(.primary)
                                 }
@@ -92,23 +93,25 @@ struct Task1: View {
                     
                     Spacer()
                     
-                    // Start button
-                    NavigationLink(destination: Task2View(goalSubject: $subject, goalDuration: $selectedDuration)) {
+                    // MARK: - Start Button
+                    NavigationLink(
+                        destination: Task2View(
+                            goalSubject: $viewModel.subject,
+                            goalDuration: $viewModel.selectedDuration
+                        )
+                    ) {
                         Text("Start learning")
                             .fontWeight(.semibold)
                             .padding()
                             .frame(maxWidth: 182, maxHeight: 48)
                             .foregroundColor(.primary)
                             .cornerRadius(30)
-                            .glassEffect(.clear.tint(Color.orange.opacity(100)))
+                            .glassEffect(.clear.tint(Color.orange.opacity(1.0)))
                             .background(.clear)
                     }
                     .padding(.horizontal)
                     .padding(.bottom, 10)
                     .padding(.top, 10)
-                    //.glassEffect(.clear.tint(Color.darkOrange.opacity(0.15)))
-
-                    
                 }
             }
         }
@@ -116,5 +119,5 @@ struct Task1: View {
 }
 
 #Preview {
-    Task1()
+    Task1View()
 }

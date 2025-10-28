@@ -2,46 +2,45 @@
 //  Task4.swift
 //  Learning
 //
-//  Created by aeshah mohammed alabdulkarim on 24/10/2025.
+//  Created by aeshah mohammed alabdulkarim on 28/10/2025.
 //
-// 
+
+
 
 import SwiftUI
 
 struct Task4: View {
-    @State private var goToTask2 = false
+    @StateObject private var viewModel = Task4ViewModel()
     @Environment(\.dismiss) var dismiss
-    @State private var goalText: String = ""
-    @State private var selectedDuration: String = "Month"
-    @State private var showConfirmation = false
-    
+
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 24) {NavigationLink(destination: Task2View(goalSubject: $goalText, goalDuration: $selectedDuration), isActive: $goToTask2) {
-                EmptyView()
-            }
+            VStack(alignment: .leading, spacing: 24) {
+                NavigationLink(destination: Task2View(goalSubject: $viewModel.goalText, goalDuration: $viewModel.selectedDuration), isActive: $viewModel.goToTask2) {
+                    EmptyView()
+                }
 
                 HStack{
-                
-                    Button {dismiss()
+                    Button {
+                        dismiss()
                     } label: {
                         Image(systemName: "chevron.backward")
                             .font(.title2)
                             .frame(width: 40, height: 40)
                             .glassEffect()
                             .foregroundColor(.primary)
-                           
-                       
                     }
-                   
+
                     Spacer()
-                      VStack(alignment: .leading, spacing: 24){    Text("Learning Goal")
+                    VStack(alignment: .leading, spacing: 24) {
+                        Text("Learning Goal")
                             .font(.title)
-                          .foregroundColor(.primary)}
+                            .foregroundColor(.primary)
+                    }
                     Spacer()
                     HStack() {
                         Button {
-                            showConfirmation = true
+                            viewModel.showConfirmation = true
                         } label: {
                             Image(systemName: "checkmark")
                                 .padding(.horizontal,10)
@@ -50,58 +49,54 @@ struct Task4: View {
                                 .glassEffect()
                                 .background(Color.orange)
                                 .clipShape(Circle())
-                            
                         }.shadow(color: .orange.opacity(0.4), radius: 5, x: 0, y: 3)
                     }
                 }
-                
+
                 Text("I want to learn")
                     .font(.headline)
                     .foregroundColor(.primary.opacity(0.8))
-                
-                TextField("", text: $goalText)
+
+                TextField("", text: $viewModel.goalText)
                     .foregroundColor(.primary)
                     .padding(.vertical, 8)
                     .overlay(Rectangle().frame(height: 1).foregroundColor(.primary), alignment: .bottom)
-                
+
                 Text("I want to learn it in a")
                     .font(.headline)
                     .foregroundColor(.primary)
-                
+
                 HStack(spacing: 16) {
                     ForEach(["Week", "Month", "Year"], id: \.self) { duration in
                         Button {
-                            selectedDuration = duration } label: {
+                            viewModel.selectedDuration = duration
+                        } label: {
                             Text(duration)
                                 .padding(.vertical, 8)
                                 .padding(.horizontal, 20)
                                 .background(
                                     Capsule()
-                                        .fill(selectedDuration == duration ? Color.orange : Color.primary.opacity(0.3))
+                                        .fill(viewModel.selectedDuration == duration ? Color.orange : Color.primary.opacity(0.3))
                                 )
                                 .foregroundColor(.primary)
-                        }                    }                }
+                        }
+                    }
+                }
 
-                
                 Spacer()
             }
             .padding()
             .background(Color(.systemBackground).ignoresSafeArea())
             .navigationTitle("Learning Goal")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                   
-                }
-            }
             .overlay {
-                if showConfirmation {
+                if viewModel.showConfirmation {
                     ZStack {
                         // Dimmed background
                         Color(.systemBackground).opacity(0.6)
                             .ignoresSafeArea()
                             .onTapGesture {
-                                showConfirmation = false
+                                viewModel.showConfirmation = false
                             }
 
                         // Custom dark popup
@@ -117,7 +112,7 @@ struct Task4: View {
 
                             HStack {
                                 Button("Dismiss") {
-                                    showConfirmation = false
+                                    viewModel.showConfirmation = false
                                 }
                                 .foregroundColor(.primary)
                                 .frame(maxWidth: .infinity)
@@ -126,8 +121,9 @@ struct Task4: View {
                                 .cornerRadius(20)
 
                                 Button("Update") {
-                                    showConfirmation = false
-                                        goToTask2 = true                                }
+                                    viewModel.showConfirmation = false
+                                    viewModel.goToTask2 = true
+                                }
                                 .foregroundColor(.primary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 10)
@@ -135,24 +131,24 @@ struct Task4: View {
                                 .cornerRadius(20)
                             }
                         }
-                       .padding()
+                        .padding()
                         .background(Color(.systemBackground).opacity(0.9))
                         .cornerRadius(16)
-                     .shadow(radius: 16)
-                  .frame(maxWidth: 300)
-                 .glassEffect()
+                        .shadow(radius: 16)
+                        .frame(maxWidth: 300)
+                        .glassEffect()
                     }
                     .transition(.opacity)
-                    .animation(.easeInOut, value: showConfirmation)
+                    .animation(.easeInOut, value: viewModel.showConfirmation)
                 }
             }
             .navigationBarBackButtonHidden(true)
-
         }
     }
 }
 
-#Preview {
-    Task4()
+struct Task4_Previews: PreviewProvider {
+    static var previews: some View {
+        Task4()
+    }
 }
-
