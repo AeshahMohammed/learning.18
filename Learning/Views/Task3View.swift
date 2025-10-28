@@ -173,6 +173,9 @@ struct Task3View: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.horizontal, 24)
+                        
                         
                         NavigationLink(destination: Task4(), isActive: $viewModel.goToTask4) {
                             EmptyView()
@@ -202,15 +205,20 @@ struct Task3View: View {
                         }
 
                         Button {
-                            dismiss()
-                            // Keep same goal logic
+                           
+                            learnedDays = 0
+                            frozenDays = 0
+                            loggedDays.removeAll()
+                            selectedDate = Date()
+                            
+                            dismiss() 
                         } label: {
                             Text("Set same learning goal and duration")
                                 .font(.subheadline)
                                 .foregroundColor(.orange)
                         }
                     }
-                    .padding()
+                    .padding(10)
                 }
 
                 Spacer()

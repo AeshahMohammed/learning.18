@@ -30,8 +30,18 @@ final class Task2ViewModel: ObservableObject {
     @Published var learningGoalUpdated: Bool = true
     @Published var weekCompleted: Bool = false
 
-    let freezeLimit = 2
-
+    var freezeLimit: Int {
+        switch goalDuration.lowercased() {
+        case "week", "1 week", "weekly":
+            return 2
+        case "month", "1 month", "monthly":
+            return 8
+        case "year", "1 year", "yearly":
+            return 96
+        default:
+            return 2
+        }
+    }
     init(goalSubject: Binding<String>, goalDuration: Binding<String>) {
         self.goalSubjectBinding = goalSubject
         self.goalDurationBinding = goalDuration

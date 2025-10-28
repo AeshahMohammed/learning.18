@@ -196,11 +196,11 @@ struct Task2View: View {
 
                     ZStack {
                         Circle()
-                            .fill(selectedIsFrozen ? Color.black : (selectedIsLearned ? Color.orange.opacity(0.9)  : Color.orange.opacity(0.7)))
-                            .glassEffect()
+                            .fill(selectedIsFrozen ? Color.learnedBlue2 : (selectedIsLearned ? Color.orange.opacity(0.9)  : Color.orange.opacity(0.7)))
+                          //  .glassEffect()
                             .overlay(
                                 Circle().stroke(
-                                    selectedIsFrozen ? Color.blue : (selectedIsLearned ? Color.orange : Color.clear),
+                                    selectedIsFrozen ? Color.learnedBlue : (selectedIsLearned ? Color.learnedOrange : Color.clear),
                                     lineWidth: 10
                                 )
                             )
@@ -212,7 +212,7 @@ struct Task2View: View {
                                 "Log as Learned")
                         .font(.title)
                         .bold()
-                        .foregroundColor(.primary)
+                        .foregroundColor(.white)
                     }
                     .onTapGesture {
                         if !selectedIsLearned && !selectedIsFrozen {
